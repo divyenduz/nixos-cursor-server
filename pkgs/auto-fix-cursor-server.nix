@@ -21,7 +21,7 @@
   enableFHS ? false,
   nodejsPackage ? null,
   extraRuntimeDependencies ? [ ],
-  installPath ? "~/.vscode-server",
+  installPath ? "~/.cursor-server",
   postPatch ? "",
 }: let
   inherit (lib) makeBinPath makeLibraryPath optionalString;
@@ -68,7 +68,7 @@
   };
 
   patchELFScript = writeShellApplication {
-    name = "patchelf-vscode-server";
+    name = "patchelf-cursor-server";
     runtimeInputs = [ coreutils findutils patchelf ];
     text = ''
       bin=$1
@@ -118,12 +118,12 @@
       # Mark the bin directory as being fully patched.
       echo 1 > "$patched_file"
 
-      ${optionalString (postPatch != "") ''${writeShellScript "post-patchelf-vscode-server" postPatch} "$bin"''}
+      ${optionalString (postPatch != "") ''${writeShellScript "post-patchelf-cursor-server" postPatch} "$bin"''}
     '';
   };
 
   autoFixScript = writeShellApplication {
-    name = "auto-fix-vscode-server";
+    name = "auto-fix-cursor-server";
     runtimeInputs = [ coreutils findutils inotify-tools ];
     text = ''
       bins_dir=${installPath}/bin
@@ -159,7 +159,7 @@
 
         # We leave the rest up to the Bash script
         # to keep having to deal with 'sh' compatibility to a minimum.
-        ${patchELFScript}/bin/patchelf-vscode-server '$bin'
+        ${patchELFScript}/bin/patchelf-cursor-server '$bin'
 
         # Let Node.js take over as if this script never existed.
         exec '$orig_node' "\$@"
